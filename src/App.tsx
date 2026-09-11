@@ -1,3 +1,4 @@
+import { PostCredits } from "@/components/PostCredits"
 import { AnalyticsConsent } from "@/components/AnalyticsConsent"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { animate, motion, useMotionValue, useTransform, useVelocity } from "framer-motion"
@@ -23,6 +24,7 @@ const telas = [
   { id: "dupla", nome: "A dupla" },
   { id: "duvidas", nome: "Dúvidas" },
   { id: "contato", nome: "Contato" },
+  { id: "pos-creditos", nome: "Pós-créditos" },
 ]
 const T = telas.length
 const slate = (i: number) => `${String(i).padStart(2, "0")} / ${String(T).padStart(2, "0")}`
@@ -390,6 +392,7 @@ export default function App() {
             </p>
           </motion.div>
         </Screen>
+        <PostCredits active={atual === T - 1} restart={() => ir(0, 1.4)} />
       </main>
       </PointerCtx.Provider>
     </ScrollCtx.Provider>

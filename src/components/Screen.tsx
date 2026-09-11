@@ -1,3 +1,4 @@
+import { CinemaLight } from "./CinemaLight"
 import { useEffect, useRef, useState, type ReactNode } from "react"
 import { motion, useReducedMotion, useSpring, useTransform, type MotionValue } from "framer-motion"
 import { usePalco } from "./ScrollContext"
@@ -153,8 +154,8 @@ export function Screen({
 
   const dollyE = useTransform(p, [0, 0.34, 0.66, 1], [0.93, 1, 1, 1.05])
   const dollyO = useTransform(p, [0, 0.28, 0.72, 1], [0.1, 1, 1, 0.06])
-  const escala = passagem ? dollyE : undefined
-  const opac = passagem ? dollyO : undefined
+  const escala = passagem && !reduz ? dollyE : undefined
+  const opac = passagem && !reduz ? dollyO : undefined
 
   const obturadorBruto = useTransform(vel ?? (0 as never), (v: number) => 1 + v * 1.5)
   const obturador = useSpring(obturadorBruto, { stiffness: 220, damping: 30, mass: 0.35 })
@@ -182,13 +183,14 @@ export function Screen({
       initial={reduz ? false : "hidden"} whileInView={reduz ? undefined : "show"}
       viewport={{ root: palco?.ref ?? undefined, amount: 0.45, once: false }}
       variants={stage}
-      className="relative grid h-dvh w-full shrink-0 snap-start snap-always content-center overflow-hidden bg-grafite"
+      className="cinema-screen relative grid h-dvh w-full shrink-0 snap-start snap-always content-center overflow-hidden bg-grafite"
     >
       {/* palco: vive entre as tarjas */}
-      <motion.div style={{ x: paX, top: "var(--bar)", bottom: "var(--bar)" }}
+      <motion.div style={{ x: reduz ? 0 : paX, top: "var(--bar)", bottom: "var(--bar)" }}
         className="absolute inset-x-0 z-0 overflow-hidden">
 
         {perto && <>
+        <CinemaLight scene={indice} />
         {/* plano 1 — superfície e grade larga na MESMA camada:
             duas camadas grandes compostas viravam duas vezes o custo. */}
         <Plano y={y1} className={cn("-top-[15%] h-[130%] grade-larga", superficies[superficie], midia && "opacity-45")} />
@@ -201,9 +203,9 @@ export function Screen({
         <Plano y={y3} className={cn("-top-[30%] h-[160%] grade-fina", midia && "opacity-30")} />
 
                 {midia && (
-          <Plano y={y1} className="-top-[15%] h-[130%]">
+          <Plano y={y1} className="cinema-footage -top-[15%] h-[130%]">
             {/\.(mp4|webm|mov)$/i.test(midia)
-              ? <video src={midia} autoPlay muted loop playsInline preload="metadata" className="h-full w-full object-cover" />
+              ? <video src={midia} autoPlay={!reduz} muted loop playsInline preload="metadata" className="h-full w-full object-cover" />
               : <img src={midia} alt="" className="h-full w-full object-cover" />}
           </Plano>
         )}
@@ -260,7 +262,7 @@ export function Screen({
           {/* obturador: a tarja engrossa no corte e volta ao repouso.
               Só a placa preta escala — a linha de dados fica intacta. */}
           <motion.span
-            style={{ scaleY: passagem ? obturador : undefined }}
+            style={{ scaleY: passagem && !reduz ? obturador : undefined }}
             className={cn("absolute inset-0 block bg-grafite", origem)}
           />
           <motion.span
