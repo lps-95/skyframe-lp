@@ -1,3 +1,4 @@
+import { AnalyticsConsent } from "@/components/AnalyticsConsent"
 import { useCallback, useEffect, useRef, useState } from "react"
 import { animate, motion, useMotionValue, useTransform, useVelocity } from "framer-motion"
 import { ScrollCtx } from "@/components/ScrollContext"
@@ -137,6 +138,7 @@ export default function App() {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (!palco.current) return
+      if (e.target instanceof Element && e.target.closest("button, a, input, textarea, select, [contenteditable]")) return
       const i = indiceMaisProximo()
       if (["ArrowDown", "PageDown", " "].includes(e.key)) { e.preventDefault(); ir(i + 1) }
       if (["ArrowUp", "PageUp"].includes(e.key)) { e.preventDefault(); ir(i - 1) }
@@ -151,6 +153,7 @@ export default function App() {
     <ScrollCtx.Provider value={{ ref: palco, y: rolagem, altura, vel, passagem }}>
       <PointerCtx.Provider value={ponteiro}>
       <Curtain />
+      <AnalyticsConsent />
       <Marca onClick={() => ir(0, 1.4)} />
       <CtaFixo />
       <Rail telas={telas} atual={atual} ir={(i) => ir(i, 1.2)} />
@@ -165,11 +168,11 @@ export default function App() {
         {/* ---------- 01 abertura ---------- */}
         <Screen id="t1" indice={0} superficie="noite" enquadre marca="SKYFRAME" feixe="dir" center midia={site.midia[0]}
           slateL={site.coordenada} slateR="4K · 16:9" rodapeL={site.cidade} rodapeR={slate(1)}>
-          <motion.span variants={rise} className="dado-sm block text-gelo/45">Skyframe · Florianópolis</motion.span>
+          <motion.span variants={rise} className="dado-sm block text-gelo/45">Skyframe · Produção audiovisual e drone</motion.span>
           <Frase as="h1" className={`mt-4 ${H1}`}
-            partes={[{ texto: "O seu negócio merece" }, { texto: "ser visto por inteiro", leve: true }]} />
+            partes={[{ texto: "Videomaker em Florianópolis" }, { texto: "para mostrar seu negócio por inteiro", leve: true }]} />
           <motion.p variants={rise} className={`mx-auto mt-5 max-w-[54ch] ${CORPO}`}>
-            Filmes com direção de cena, imagem aérea e cor tratada para transformar lugares,
+            Produção de vídeos, filmagem com drone e edição para transformar lugares,
             marcas e experiências em histórias que dão vontade de estar ali. Pronto para publicar em até 10 dias.
           </motion.p>
           <motion.div variants={rise} className="mt-8 flex flex-wrap justify-center gap-3">

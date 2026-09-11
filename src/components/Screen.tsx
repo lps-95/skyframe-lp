@@ -168,12 +168,10 @@ export function Screen({
      navegador reaproveita o mesmo ladrilho já desenhado.
      Os fatores abaixo são o deslocamento em fração da altura da tela,
      equivalentes aos antigos 11/15/21% da altura de cada plano. */
-  const desloca = (fracao: number) =>
-    useTransform(p, (v: number) => Math.round((v - 0.5) * 2 * fracao * h))
-  const y1 = desloca(0.143)
-  const y2 = desloca(0.216)
-  const y3 = desloca(0.288)
-  const yx = desloca(0.365)   /* plano mais rápido */
+  const y1 = useTransform(p, (v: number) => Math.round((v - 0.5) * 2 * 0.143 * h))
+  const y2 = useTransform(p, (v: number) => Math.round((v - 0.5) * 2 * 0.216 * h))
+  const y3 = useTransform(p, (v: number) => Math.round((v - 0.5) * 2 * 0.288 * h))
+  const yx = useTransform(p, (v: number) => Math.round((v - 0.5) * 2 * 0.365 * h))   /* plano mais rápido */
   const paX = useTransform(mx, (v) => v * 9)
 
   const linha = evento ? "border-ciano/35" : "border-gelo/20"
