@@ -1,0 +1,208 @@
+@import "tailwindcss";
+
+/* ==============================================================
+   SKYFRAME — tokens do Manual de Identidade Visual (2026)
+   Paleta enxuta de propósito: a imagem aérea é que tem cor.
+   ============================================================== */
+@theme {
+  /* 03 · Paleta */
+  --color-grafite: #0B0E13;   /* base / fundo — 60% */
+  --color-meianoite: #16233F; /* superfícies, realces e linhas — 30% */
+  --color-gelo: #F5F7FA;      /* texto, logotipo e respiro — 10% */
+  --color-ciano: #5EEAD4;     /* destaque secundário — SÓ conteúdo de eventos — 5% */
+
+  /* 04 · Tipografia — duas famílias, três papéis */
+  --font-marca: "Space Grotesk", system-ui, sans-serif;   /* logotipo e títulos */
+  --font-sans: "Inter", system-ui, sans-serif;            /* corpo de texto */
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;  /* dados técnicos */
+
+  /* escala tipográfica do manual (teto nos valores oficiais) */
+  --text-h1: clamp(30px, 5.6vw, 50px);
+  --text-h2: clamp(24px, 3.8vw, 36px);
+  --text-h3: clamp(19px, 2.2vw, 26px);
+  --text-corpo: clamp(15px, 1.5vw, 18px);
+  --text-caption: 13px;
+
+  --radius: 0px;
+
+  /* Accordion (shadcn/Radix): registrado aqui para virar utilitário Tailwind.
+     Como classe solta, a variante data-[state=open]:animate-… nunca é gerada. */
+  --animate-accordion-down: accordion-down 0.55s cubic-bezier(0.22, 0.61, 0.24, 1);
+  --animate-accordion-up: accordion-up 0.42s cubic-bezier(0.22, 0.61, 0.24, 1);
+  @keyframes accordion-down {
+    from { height: 0; opacity: 0; }
+    to   { height: var(--radix-accordion-content-height); opacity: 1; }
+  }
+  @keyframes accordion-up {
+    from { height: var(--radix-accordion-content-height); opacity: 1; }
+    to   { height: 0; opacity: 0; }
+  }
+}
+
+:root {
+  --border: rgb(245 247 250 / 0.14);
+  --bar: clamp(20px, 3.2vh, 36px);
+  --pad: clamp(16px, 4vw, 44px);
+}
+
+@layer base {
+  * { border-color: var(--border); }
+  html, body, #root { height: 100%; background: var(--color-grafite); }
+  body {
+    margin: 0;
+    color: var(--color-gelo);
+    font-family: var(--font-sans);
+    font-size: var(--text-corpo);
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    overflow: hidden;              /* quem rola é o palco */
+  }
+  /* trava de legibilidade: todo título nasce claro */
+  h1, h2, h3, h4, h5, h6 { color: var(--color-gelo); font-family: var(--font-marca); margin: 0; }
+  h1 { font-size: var(--text-h1); font-weight: 600; line-height: 1.02; letter-spacing: -0.02em; }
+  h2 { font-size: var(--text-h2); font-weight: 600; line-height: 1.06; letter-spacing: -0.015em; }
+  h3 { font-size: var(--text-h3); font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; }
+  p { margin: 0; }
+  ::selection { background: var(--color-gelo); color: var(--color-grafite); }
+}
+
+@layer utilities {
+  /* dados técnicos: hex, specs, coordenadas, numeração de tela */
+  .dado {
+    font-family: var(--font-mono);
+    font-size: var(--text-caption);
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+  }
+  .dado-sm { font-size: 10.5px; letter-spacing: 0.22em; }
+
+  /* grade técnica em duas escalas — linha, não ornamento.
+     São elas que tornam o parallax visível: gradiente não tem borda. */
+  /* DESEMPENHO: como ladrilho SVG o navegador rasteriza uma vez e repete.
+     Com repeating-linear-gradient a camada inteira era redesenhada a cada
+     quadro — media a metade da taxa de quadros da página. */
+  .grade-larga {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cpath d='M0 0H160' stroke='%23F5F7FA' stroke-opacity='.05' stroke-width='1'/%3E%3Cpath d='M0 0V160' stroke='%23F5F7FA' stroke-opacity='.07' stroke-width='1'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+  }
+  .grade-fina {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M0 0H40' stroke='%23F5F7FA' stroke-opacity='.025' stroke-width='1'/%3E%3Cpath d='M0 0V40' stroke='%23F5F7FA' stroke-opacity='.035' stroke-width='1'/%3E%3C/svg%3E");
+    background-size: 40px 40px;
+  }
+  /* Curvas de nível — a marca é cobertura aérea, o fundo é um mapa de altitude.
+     DESEMPENHO: como imagem SVG lado a lado o navegador rasteriza um ladrilho
+     uma vez e reaproveita. Gradiente radial repetido era redesenhado a cada quadro. */
+  .topografia {
+    background-image:
+      var(--realce, radial-gradient(42% 40% at 66% 48%, rgb(22 35 63 / .85), transparent 70%)),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='560' height='560' viewBox='0 0 560 560'%3E%3Cg fill='none' stroke='%23F5F7FA' stroke-opacity='0.075'%3E%3Ccircle cx='150' cy='380' r='46'/%3E%3Ccircle cx='150' cy='380' r='92'/%3E%3Ccircle cx='150' cy='380' r='138'/%3E%3Ccircle cx='150' cy='380' r='184'/%3E%3Ccircle cx='150' cy='380' r='230'/%3E%3C/g%3E%3Cg fill='none' stroke='%23F5F7FA' stroke-opacity='0.05'%3E%3Ccircle cx='430' cy='150' r='62'/%3E%3Ccircle cx='430' cy='150' r='124'/%3E%3Ccircle cx='430' cy='150' r='186'/%3E%3Ccircle cx='430' cy='150' r='248'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 100% 100%, 560px 560px;
+  }
+  .topografia-ciano {
+    background-image:
+      var(--realce, radial-gradient(40% 38% at 62% 46%, rgb(94 234 212 / .16), transparent 68%)),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='560' height='560' viewBox='0 0 560 560'%3E%3Cg fill='none' stroke='%235EEAD4' stroke-opacity='0.11'%3E%3Ccircle cx='150' cy='380' r='46'/%3E%3Ccircle cx='150' cy='380' r='92'/%3E%3Ccircle cx='150' cy='380' r='138'/%3E%3Ccircle cx='150' cy='380' r='184'/%3E%3Ccircle cx='150' cy='380' r='230'/%3E%3C/g%3E%3Cg fill='none' stroke='%235EEAD4' stroke-opacity='0.07'%3E%3Ccircle cx='430' cy='150' r='62'/%3E%3Ccircle cx='430' cy='150' r='124'/%3E%3Ccircle cx='430' cy='150' r='186'/%3E%3Ccircle cx='430' cy='150' r='248'/%3E%3C/g%3E%3C/svg%3E");
+    background-size: 100% 100%, 560px 560px;
+  }
+  /* tipografia gigante em contorno: plano rápido, movimento inequívoco */
+  .contorno {
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(245 247 250 / .11);
+  }
+  .contorno-ciano { -webkit-text-stroke-color: rgb(94 234 212 / .16); }
+  /* numeral em contorno: número grande vira estrutura, não caixa */
+  .numeral {
+    color: transparent;
+    -webkit-text-stroke: 1px rgb(245 247 250 / .42);
+  }
+  .numeral-ciano { -webkit-text-stroke-color: rgb(94 234 212 / .5); }
+  /* Feixe: luz de set entrando na diagonal — halação, não risco.
+     A faixa clara se espalha por ~40% da largura e o núcleo é fraco de
+     propósito: luz não tem borda.
+
+     DESEMPENHO: o feixe NÃO tem camada própria e NÃO usa máscara. Ele entra
+     como uma camada de fundo a mais do plano de curvas de nível, através da
+     variável --feixe. Máscara sobre camada grande em movimento obriga o
+     navegador a recompor a camada inteira a cada quadro — foi o que derrubou
+     a taxa de quadros. Como fundo de uma camada que já existe, custa zero. */
+  /* Camada de profundidade: vinheta, realce e feixe juntos, e PARADOS.
+     Luz de set e vinheta não pertencem ao terreno — não faz sentido darem
+     parallax. Fora da pilha em movimento, elas rasterizam uma vez só. */
+  .profundidade {
+    background-image:
+      var(--feixe, none),
+      radial-gradient(ellipse at 50% 46%, transparent 36%, rgb(11 14 19 / .72));
+    background-size: 100% 100%, 100% 100%;
+  }
+  .realce-ciano { --realce: radial-gradient(40% 38% at 62% 46%, rgb(94 234 212 / .16), transparent 68%); }
+  .feixe-dir { --feixe: linear-gradient(101deg,
+      transparent 26%, rgb(245 247 250 / .028) 42%, rgb(206 222 244 / .06) 50%,
+      rgb(245 247 250 / .028) 58%, transparent 74%); }
+  .feixe-esq { --feixe: linear-gradient(-101deg,
+      transparent 26%, rgb(245 247 250 / .028) 42%, rgb(206 222 244 / .06) 50%,
+      rgb(245 247 250 / .028) 58%, transparent 74%); }
+  .escala {
+    background: repeating-linear-gradient(180deg, rgb(245 247 250 / .22) 0 1px, transparent 1px 14px);
+  }
+  /* varredura de levantamento: passa uma vez quando a tela assume o quadro */
+  @keyframes varredura {
+    0%   { transform: translateY(-60%); opacity: 0; }
+    18%  { opacity: 1; }
+    100% { transform: translateY(160%); opacity: 0; }
+  }
+  .varredura { animation: varredura 2.4s cubic-bezier(.16,.9,.28,1) .25s; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { scrollbar-width: none; }
+}
+
+/* Telas baixas: comprime para caber sem cortar */
+@media (max-height: 720px) {
+  .screen-inner { padding-block: calc(var(--bar) + 14px); }
+  .screen-inner h1 { font-size: clamp(24px, 5vw, 36px); }
+  .screen-inner h2 { font-size: clamp(20px, 4vw, 30px); }
+  .screen-inner p  { font-size: 14px; line-height: 1.45; }
+  .screen-inner .lista-precos { display: none; }
+  .screen-inner .numeral { font-size: clamp(28px, 4vw, 40px); }
+  .screen-inner [data-slot="accordion-trigger"] { padding-block: 10px; font-size: 13.5px; }
+}
+/* Quando a grade de preços quebra em duas linhas, o rodapé da oferta vira
+   uma linha só: rótulo e chamada. A explicação sai — ela é secundária. */
+@media (max-width: 1024px) {
+  .screen-inner .rodape-oferta p { display: none; }
+}
+/* Tela baixa: o rodapé da oferta sai inteiro para os preços não serem cortados. */
+@media (max-height: 700px) {
+  .screen-inner .rodape-oferta { display: none; }
+}
+
+/* Celular deitado: a apresentação vira rolagem livre — forçar tela cheia cortaria conteúdo */
+@media (max-height: 560px) {
+  main { scroll-snap-type: y proximity; }
+  main > section { height: auto; min-height: 100dvh; }
+}
+
+/* A copy de venda é mais longa. Na tela mais baixa, o bloco de entrega
+   mostra só o número e o título — a explicação não cabe e não é essencial. */
+@media (max-height: 700px) and (max-width: 430px) {
+  .screen-inner .bloco-entrega p { display: none; }
+  .screen-inner .numeral { font-size: 24px; }
+}
+
+
+/* Acessibilidade: quem pede menos movimento recebe a mesma informação sem coreografia. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .varredura { animation: none !important; opacity: 0 !important; }
+}
+
+@layer base {
+  :where(a, button, [tabindex]):focus-visible {
+    outline: 2px solid rgb(245 247 250 / .9);
+    outline-offset: 4px;
+  }
+}
